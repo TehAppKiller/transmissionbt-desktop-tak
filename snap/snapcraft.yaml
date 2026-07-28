@@ -1,0 +1,183 @@
+name: transmissionbt-desktop-tak
+title: transmissionbt-desktop-tak
+summary: UnOfficial release of Transmission bittorrent for Desktop (with graphical UI)
+description: |
+  **Transmission is a Fast, Easy and Free Bittorrent Client.**
+
+  * This is the desktop version with graphical UI ; for server version with only webUI see https://snapcraft.io/transmissionbt-tak
+  * See https://transmissionbt.com for more details.
+
+  **Transmission BT Release**
+  * Utils (transmission-create, -edit, -show) are accessible directly
+  * Snap dependencies required: mesa-2404, gnome-xx-2404, gtk-common-themes
+  
+  **!!! Files can only be written in a directory owned by 'user' (not by 'root') !!!**
+  
+  This is due to current behavior and restrictions of snaps by Canonical.
+website: https://transmissionbt.com
+source-code: https://github.com/TehAppKiller/transmissionbt-desktop-tak
+issues: https://github.com/TehAppKiller/transmissionbt-desktop-tak/issues
+contact: mailto:tehappkiller@proton.me
+donation: https://whydonate.com/en/fundraising/help-teh-devz
+license: MIT
+icon: icon.svg
+grade: stable
+confinement: strict
+base: core24
+adopt-info: transmissionbt
+platforms:
+  amd64:
+  arm64:
+  armhf:
+  ppc64el:
+  s390x:
+  riscv64:
+
+apps:
+  transmissionbt:
+    extensions: [gnome]
+    command: usr/bin/transmission-gtk
+    desktop: usr/share/applications/transmission-gtk.desktop
+    plugs:
+      - home
+      - network
+      - network-bind
+      - removable-media # useless for now ; snaps apps are allowed to access user folder only (not root ones)
+      - mount-observe # useless for now ; snaps apps are allowed to access user folder only (not root ones)
+      - unity7
+    environment:
+      TRANSMISSION_WEB_HOME: $SNAP/usr/share/transmission/public_html/
+    #  LD_LIBRARY_PATH: $SNAP/usr/lib/:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/:$LD_LIBRARY_PATH # ! Temp fix for Snapcraft 9.0.0 error
+      
+  #transmissionbt-daemon: # Daemon NOT defined because of different files access between App and Daemon (root Vs. user)
+    
+  # Allow utils app to be called
+  transmission-create:
+    command: usr/bin/transmission-create
+    plugs:
+      - mount-observe
+      - network
+      - network-bind
+      - removable-media
+      - home # avaibility depends on caller (root (sudo) or user)
+      
+  transmission-edit:
+    command: usr/bin/transmission-edit
+    plugs:
+      - mount-observe
+      - network
+      - network-bind
+      - removable-media
+      - home # avaibility depends on caller (root (sudo) or user)
+      
+  transmission-remote:
+    command: usr/bin/transmission-remote
+    plugs:
+      - mount-observe
+      - network
+      - network-bind
+      - removable-media
+      - home # avaibility depends on caller (root (sudo) or user)
+      
+  transmission-show:
+    command: usr/bin/transmission-show
+    plugs:
+      - mount-observe
+      - network
+      - network-bind
+      - removable-media
+      - home # avaibility depends on caller (root (sudo) or user)
+
+parts:
+  transmissionbt:
+    override-pull: |
+      craftctl default
+
+      # Get Last Source Tag version and Check Snap (with same Source) version
+      src_version=$(git ls-remote --tags --sort='version:refname' https://github.com/transmission/transmission.git | grep -e 'refs\/tags\/[0-9]*\.[0-9]*\.[0-9]*$' -e 'refs\/tags\/[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*$' | tail -n 1 | sed 's/.*refs\/tags\///');
+      echo "Source last tag: ${src_version}"
+      snap_last_version=$(curl -sL -H "Snap-Device-Series: 16" "https://api.snapcraft.io/v2/snaps/info/transmissionbt-tak?architecture=${CRAFT_ARCH_BUILD_FOR}&fields=version" | sed -nre "s/^.*\"stable\"\,\"track\"\:\"latest\"\}\,\"version\"\:\"([^\"]*)\".*/\1/p");
+      echo "Snap last version: ${snap_last_version}"
+      snap_build_with_same_version=$(echo $snap_last_version | sed -nre "s/^($src_version.*).*/\1/p");
+      # Same version ?
+      if [ -z "$snap_build_with_same_version" ]
+      then
+        new_snap_version="${src_version}";
+      else
+        # Get snap build version
+        snap_build=$(echo $snap_build_with_same_version | sed -nre 's/^.*-v([0-9]*).*/\1/p');
+        # Already a build version ?
+        if [ -z "$snap_build" ]
+        then
+          # init @v2
+          new_snap_build="2";
+        else
+          # increment @v+1
+          new_snap_build=$(($snap_build+1));
+        fi
+
+        new_snap_version="${src_version}-v${new_snap_build}";
+      fi
+
+      craftctl set version=$new_snap_version
+
+      # Pull
+      rm -rf $CRAFT_PART_SRC/{,.[!.],..?}*
+      git clone -b ${src_version} --depth=1 --recursive https://github.com/transmission/transmission.git .
+      
+      # Update icon gen
+      sed 's|^Icon=.*|Icon=${SNAP}/usr/share/icons/hicolor/scalable/apps/transmission-gtk.svg|' -i gtk/transmission-gtk.desktop.in
+    source: .
+    plugin: cmake
+    cmake-generator: Ninja
+    cmake-parameters:
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+      - -DENABLE_GTK=ON # Gnome UI
+      - -DENABLE_QT=OFF # No QT UI
+      - -DUSE_SYSTEM_EVENT2=ON
+      - -DUSE_SYSTEM_DEFLATE=ON
+      - -DUSE_SYSTEM_MINIUPNPC=ON
+      - -DUSE_SYSTEM_NATPMP=ON
+      - -DUSE_SYSTEM_B64=ON
+      - -DUSE_SYSTEM_PSL=ON
+      - -DUSE_SYSTEM_DHT=OFF # Not packaged in Ubuntu
+      - -DUSE_SYSTEM_UTP=OFF # Not packaged in Ubuntu
+      - -DWITH_CRYPTO=openssl
+      - -DWITH_SYSTEMD=OFF # Not needed
+      - -DWITH_APPINDICATOR=ON
+    build-packages:
+      - curl
+      - git
+      - libssl-dev
+      - libcurl4-openssl-dev
+      - libdeflate-dev
+      - libevent-dev
+      - libnatpmp-dev
+      - libminiupnpc-dev
+      - libpsl-dev
+      - libb64-dev
+      #- libsystemd-dev # Option not needed
+    #prime:
+    #  - usr/bin
+    #  - usr/share/applications
+    #  - usr/share/icons/hicolor/scalable/apps
+
+  deps:
+    plugin: nil
+    source: .
+    stage-packages:
+      - libcurl4t64
+      - libldap2
+      - libnghttp2-14
+      - libpsl5t64
+      - librtmp1
+      - libsasl2-2
+      #- libssh2-1t64 # included in Gnome extension
+      - libb64-0d
+      - libdeflate0
+      - libevent-2.1-7t64
+      - libminiupnpc17
+      - libnatpmp1t64
+      
