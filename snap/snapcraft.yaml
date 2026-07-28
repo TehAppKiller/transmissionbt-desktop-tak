@@ -17,7 +17,7 @@ description: |
 website: https://transmissionbt.com
 source-code: https://github.com/TehAppKiller/transmissionbt-desktop-tak
 issues: https://github.com/TehAppKiller/transmissionbt-desktop-tak/issues
-contact: mailto:tehappkiller@proton.me
+contact: ['mailto:tehappkiller@proton.me', 'https://mastodon.social/@TehAppKiller']
 donation: https://whydonate.com/en/fundraising/help-teh-devz
 license: MIT
 icon: icon.svg
