@@ -40,7 +40,7 @@ With default snapd installation:
 #### - Via shell
 In shell mode you can edit the file with Vim:
 ```
-sudo snap run --shell transmissionbt-tak.qbittorrent
+sudo snap run --shell transmissionbt-tak.transmissionbt
 vi $HOME/.config/transmission-daemon/settings.json
 ```
 One help sheet of Vim commands available [here](https://devhints.io/vim).
