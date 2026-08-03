@@ -41,6 +41,7 @@ slots:
 
 apps:
   transmissionbt:
+    slots: [dbus-transmissionbt]
     extensions: [gnome]
     command: usr/bin/transmission-gtk
     desktop: usr/share/applications/transmission-gtk.desktop
