@@ -32,6 +32,12 @@ platforms:
   # ppc64el: # Gnome SDK not available
   # s390x: # Gnome SDK not available
   riscv64:
+  
+slots:
+  dbus-transmissionbt:
+    interface: dbus
+    bus: session
+    name: com.transmissionbt.transmission
 
 apps:
   transmissionbt:
