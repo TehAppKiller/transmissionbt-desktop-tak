@@ -34,13 +34,13 @@ You can access the snap data in 2 ways:
 #### - Directly
 With default snapd installation:
 ```
-/root/snap/transmissionbt-tak/current/.config/transmission-daemon/settings.json
+/home/<user>/snap/transmissionbt-tak/current/.config/transmission-daemon/settings.json
 ```
 
 #### - Via shell
 In shell mode you can edit the file with Vim:
 ```
-sudo snap run --shell transmissionbt-tak.transmissionbt
+snap run --shell transmissionbt-tak.transmissionbt
 vi $HOME/.config/transmission-daemon/settings.json
 ```
 One help sheet of Vim commands available [here](https://devhints.io/vim).
