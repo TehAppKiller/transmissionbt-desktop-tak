@@ -9,7 +9,7 @@ description: |
 
   **Transmission BT Release**
   * Utils (transmission-create, -edit, -show) are accessible directly
-  * Snap dependencies required: mesa-2404, gnome-xx-2404, gtk-common-themes
+  * Snap dependencies required: mesa-2604, gnome-core26, gtk-common-themes
   
   **!!! Files can only be written in a directory owned by 'user' (not by 'root') !!!**
   
@@ -23,7 +23,7 @@ license: MIT
 icon: icon.svg
 grade: stable
 confinement: strict
-base: core24
+base: core26
 adopt-info: transmissionbt
 platforms:
   amd64:
@@ -178,13 +178,13 @@ parts:
       - libcurl4t64
       - libldap2
       - libnghttp2-14
-      - libpsl5t64
+      #- libpsl5t64 # included in Gnome extension ?
       - librtmp1
       - libsasl2-2
       #- libssh2-1t64 # included in Gnome extension
       - libb64-0d
       - libdeflate0
       - libevent-2.1-7t64
-      - libminiupnpc17
+      - libminiupnpc21
       - libnatpmp1t64
       

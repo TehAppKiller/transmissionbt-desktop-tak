@@ -18,7 +18,7 @@ See https://transmissionbt.com for more details.
 ## Information
 Transmission BT Release\
 Utils (transmission-create, -edit, -show) are accessible directly\
-Snap dependencies required: mesa-2404, gnome-xx-2404, gtk-common-themes
+Snap dependencies required: mesa-2604, gnome-core26, gtk-common-themes
 
 **!!! Files can only be written in a directory owned by `user` !!!**
 
