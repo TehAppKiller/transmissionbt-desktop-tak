@@ -9,7 +9,7 @@ https://snapcraft.io/transmissionbt-desktop-tak
 
 (For Server edition see [transmissionbt-tak](https://github.com/TehAppKiller/transmissionbt-tak))
 
-## qBittorrent Description
+## TransmissionBT Description
 <img src="/icon.svg" width="100">
 Transmission is a Fast, Easy and Free Bittorrent Client.
 
